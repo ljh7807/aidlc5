@@ -6,6 +6,7 @@ import {
   CreateReviewDto,
   ReviewListResponse,
 } from '../models';
+import { ConflictError, ValidationError } from '../errors';
 
 export class CatalogService {
   private liquorRepo: LiquorRepository;
@@ -49,12 +50,11 @@ export class CatalogService {
   createLiquorReview(userId: number, liquorId: number, dto: CreateReviewDto): void {
     // 이미 리뷰를 작성했는지 확인
     if (this.reviewRepo.hasUserReviewed(userId, 'liquor', liquorId)) {
-      throw new Error('이미 리뷰를 작성하셨습니다.');
+      throw new ConflictError('이미 리뷰를 작성하셨습니다.');
     }
 
-    // 평점 범위 검증
     if (dto.rating < 1 || dto.rating > 5) {
-      throw new Error('평점은 1-5 사이여야 합니다.');
+      throw new ValidationError('평점은 1-5 사이여야 합니다.');
     }
 
     // 리뷰 생성

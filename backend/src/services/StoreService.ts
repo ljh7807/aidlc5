@@ -7,6 +7,7 @@ import {
   CreateReviewDto,
   ReviewListResponse,
 } from '../models';
+import { NotFoundError, ConflictError, ValidationError } from '../errors';
 
 export class StoreService {
   private storeRepo: StoreRepository;
@@ -69,7 +70,7 @@ export class StoreService {
   reportStore(storeId: number, userId: number, dto: CreateStoreReportDto): StoreReport {
     const store = this.storeRepo.findById(storeId);
     if (!store) {
-      throw new Error('존재하지 않는 가맹점입니다.');
+      throw new NotFoundError('존재하지 않는 가맹점입니다.');
     }
 
     return this.storeRepo.createReport(userId, storeId, dto.reportType as any, dto.description) as unknown as StoreReport;
@@ -93,12 +94,11 @@ export class StoreService {
   createStoreReview(userId: number, storeId: number, dto: CreateReviewDto): void {
     // 이미 리뷰를 작성했는지 확인
     if (this.reviewRepo.hasUserReviewed(userId, 'store', storeId)) {
-      throw new Error('이미 리뷰를 작성하셨습니다.');
+      throw new ConflictError('이미 리뷰를 작성하셨습니다.');
     }
 
-    // 평점 범위 검증
     if (dto.rating < 1 || dto.rating > 5) {
-      throw new Error('평점은 1-5 사이여야 합니다.');
+      throw new ValidationError('평점은 1-5 사이여야 합니다.');
     }
 
     // 리뷰 생성
