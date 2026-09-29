@@ -1,6 +1,8 @@
+import dotenv from 'dotenv';
+dotenv.config(); // 반드시 다른 모듈 import 전에 먼저 실행
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 import { initializeDatabase, seedDatabase } from './database';
 import { errorHandler } from './middleware/errorHandler';
@@ -11,9 +13,6 @@ import liquorRoutes from './routes/liquor.routes';
 import storeRoutes from './routes/store.routes';
 import reservationRoutes from './routes/reservation.routes';
 import paymentRoutes from './routes/payment.routes';
-
-// 환경 변수 로드
-dotenv.config();
 
 // Express 앱 생성
 const app = express();
