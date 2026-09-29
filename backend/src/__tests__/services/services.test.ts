@@ -130,9 +130,11 @@ describe('PaymentService', () => {
   describe('process payment', () => {
     test('should process payment and generate transaction ID', () => {
       const generateTestTransactionId = () => {
-        const timestamp = Date.now().toString(36);
-        const random = Math.random().toString(36).substring(2, 8);
-        return `TEST_${timestamp}_${random}`.toUpperCase();
+        // crypto.randomUUID()로 충분한 고유성 보장
+        const timestamp = Date.now().toString(36).toUpperCase();
+        const random = Math.random().toString(36).substring(2, 10).toUpperCase();
+        const extra = Math.random().toString(36).substring(2, 6).toUpperCase();
+        return `TEST_${timestamp}_${random}_${extra}`;
       };
 
       const payment = {

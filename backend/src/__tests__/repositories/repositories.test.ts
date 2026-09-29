@@ -52,8 +52,8 @@ let liquors: MockLiquor[] = [];
 let inventory: { storeId: number; liquorId: number; quantity: number; price: number }[] = [];
 let reservations: MockReservation[] = [];
 
-let nextUserId = 1;
-let nextReservationId = 1;
+let nextUserId = 100; // 실제 DB auto-increment처럼 1부터 시작하지 않도록 임의 오프셋
+let nextReservationId = 100;
 
 // Mock UserRepository
 const userRepo = {
@@ -167,8 +167,9 @@ beforeEach(() => {
     { storeId: 2, liquorId: 1, quantity: 8, price: 89000 },
   ];
   reservations = [];
-  nextUserId = 1;
-  nextReservationId = 1;
+  // 매 테스트마다 ID를 랜덤 오프셋에서 시작 → 실제 DB처럼 ID가 1부터 시작하지 않는 상황도 검증
+  nextUserId = Math.floor(Math.random() * 900) + 100;
+  nextReservationId = Math.floor(Math.random() * 900) + 100;
 });
 
 // FR1.1 - UserRepository 테스트
