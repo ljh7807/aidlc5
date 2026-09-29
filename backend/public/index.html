@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주류예약 - Liquor Reservation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .nav button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+      background: #eee;
+    }
+    
+    .nav button.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .nav button:hover {
+      transform: scale(1.05);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .section {
+      display: none;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    /* 로그인/회원가입 폼 */
+    .auth-container {
+      max-width: 400px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .auth-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .btn:hover {
+      transform: scale(1.02);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .auth-toggle {
+      text-align: center;
+      margin-top: 15px;
+      color: #666;
+    }
+    
+    .auth-toggle a {
+      color: #667eea;
+      cursor: pointer;
+    }
+    
+    /* 주류 카드 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card-image {
+      height: 180px;
+      background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+    }
+    
+    .card-body {
+      padding: 20px;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .card-brand {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .card-info {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      padding: 4px 10px;
+      background: #f0f0f0;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    
+    .badge.type {
+      background: #667eea22;
+      color: #667eea;
+    }
+    
+    .card-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    
+    .card-btn {
+      width: 100%;
+      padding: 10px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .card-btn:hover {
+      background: #764ba2;
+    }
+    
+    /* 가맹점 카드 */
+    .store-card {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .store-card h3 {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .store-card p {
+      color: #666;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    
+    .store-card .hours {
+      color: #667eea;
+      font-weight: 500;
+    }
+    
+    /* 예약 모달 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    /* 내 예약 */
+    .reservation-card {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .reservation-card .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status.pending { background: #fff3cd; color: #856404; }
+    .status.confirmed { background: #d4edda; color: #155724; }
+    .status.completed { background: #cce5ff; color: #004085; }
+    .status.cancelled { background: #f8d7da; color: #721c24; }
+    
+    /* 유저 정보 */
+    .user-info {
+      display: none;
+      padding: 10px 20px;
+      background: #667eea11;
+      text-align: center;
+    }
+    
+    .user-info.logged-in {
+      display: block;
+    }
+    
+    .user-info span {
+      margin-right: 15px;
+    }
+    
+    .user-info button {
+      background: none;
+      border: none;
+      color: #667eea;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    /* 알림 */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background: #333;
+      color: white;
+      border-radius: 8px;
+      display: none;
+      z-index: 2000;
+    }
+    
+    .toast.success { background: #28a745; }
+    .toast.error { background: #dc3545; }
+    .toast.show { display: block; }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+    }
+    
+    .empty-state .icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🍷 주류예약</h1>
+    <p>프리미엄 주류를 예약하고 픽업하세요</p>
+  </div>
+  
+  <div class="user-info" id="userInfo">
+    <span id="userName"></span>
+    <button onclick="logout()">로그아웃</button>
+  </div>
+  
+  <nav class="nav">
+    <button class="active" onclick="showSection('liquors')">🍾 주류</button>
+    <button onclick="showSection('stores')">🏪 가맹점</button>
+    <button onclick="showSection('reservations')">📋 내 예약</button>
+    <button onclick="showSection('auth')" id="authBtn">👤 로그인</button>
+  </nav>
+  
+  <div class="container">
+    <!-- 주류 목록 -->
+    <section id="liquors" class="section active">
+      <h2 style="margin-bottom: 20px;">🍾 주류 목록</h2>
+      <div class="grid" id="liquorGrid"></div>
+    </section>
+    
+    <!-- 가맹점 목록 -->
+    <section id="stores" class="section">
+      <h2 style="margin-bottom: 20px;">🏪 가맹점 목록</h2>
+      <div class="grid" id="storeGrid"></div>
+    </section>
+    
+    <!-- 내 예약 -->
+    <section id="reservations" class="section">
+      <h2 style="margin-bottom: 20px;">📋 내 예약</h2>
+      <div id="reservationList"></div>
+    </section>
+    
+    <!-- 로그인/회원가입 -->
+    <section id="auth" class="section">
+      <div class="auth-container" id="loginForm">
+        <h2>로그인</h2>
+        <div class="form-group">
+          <label>이메일</label>
+          <input type="email" id="loginEmail" placeholder="이메일 입력">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" id="loginPassword" placeholder="비밀번호 입력">
+        </div>
+        <button class="btn" onclick="login()">로그인</button>
+        <p class="auth-toggle">
+          계정이 없으신가요? <a onclick="toggleAuth()">회원가입</a>
+        </p>
+      </div>
+      
+      <div class="auth-container" id="signupForm" style="display: none;">
+        <h2>회원가입</h2>
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" id="signupName" placeholder="이름 입력">
+        </div>
+        <div class="form-group">
+          <label>이메일</label>
+          <input type="email" id="signupEmail" placeholder="이메일 입력">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" id="signupPassword" placeholder="비밀번호 입력">
+        </div>
+        <button class="btn" onclick="signup()">회원가입</button>
+        <p class="auth-toggle">
+          이미 계정이 있으신가요? <a onclick="toggleAuth()">로그인</a>
+        </p>
+      </div>
+    </section>
+  </div>
+  
+  <!-- 예약 모달 -->
+  <div class="modal" id="reservationModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🍷 예약하기</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalLiquorInfo"></div>
+      <div class="form-group">
+        <label>픽업 매장</label>
+        <select id="modalStore" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        </select>
+      </div>
+      <div class="form-group">
+        <label>수량</label>
+        <input type="number" id="modalQuantity" value="1" min="1" max="10" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+      </div>
+      <div class="form-group">
+        <label>픽업 날짜</label>
+        <input type="date" id="modalDate" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+      </div>
+      <div class="form-group">
+        <label>픽업 시간</label>
+        <input type="time" id="modalTime" value="14:00" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+      </div>
+      <div id="modalTotal" style="font-size: 20px; font-weight: bold; color: #667eea; margin: 20px 0; text-align: right;"></div>
+      <button class="btn" onclick="createReservation()">예약하기</button>
+    </div>
+  </div>
+  
+  <!-- 토스트 알림 -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE = '';
+    let token = localStorage.getItem('token');
+    let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    let stores = [];
+    let liquors = [];
+    let selectedLiquor = null;
+    
+    // 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLiquors();
+      loadStores();
+      updateAuthUI();
+      
+      // 내일 날짜를 기본값으로
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('modalDate').value = tomorrow.toISOString().split('T')[0];
+      
+      // 수량 변경 시 총액 업데이트
+      document.getElementById('modalQuantity').addEventListener('change', updateTotal);
+    });
+    
+    // API 호출 헬퍼
+    async function api(endpoint, options = {}) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      const response = await fetch(API_BASE + endpoint, { ...options, headers });
+      return response.json();
+    }
+    
+    // 주류 목록 로드
+    async function loadLiquors() {
+      const result = await api('/api/liquors');
+      if (result.success) {
+        liquors = result.data.items;
+        renderLiquors();
+      }
+    }
+    
+    // 가맹점 목록 로드
+    async function loadStores() {
+      const result = await api('/api/stores');
+      if (result.success) {
+        stores = result.data.items;
+        renderStores();
+        updateStoreSelect();
+      }
+    }
+    
+    // 주류 렌더링
+    function renderLiquors() {
+      const typeEmoji = {
+        whiskey: '🥃',
+        wine: '🍷',
+        beer: '🍺',
+        soju: '🍶',
+        sake: '🍶',
+        other: '🍸'
+      };
+      
+      const typeKorean = {
+        whiskey: '위스키',
+        wine: '와인',
+        beer: '맥주',
+        soju: '소주',
+        sake: '사케',
+        other: '기타'
+      };
+      
+      document.getElementById('liquorGrid').innerHTML = liquors.map(liquor => `
+        <div class="card">
+          <div class="card-image">${typeEmoji[liquor.type] || '🍸'}</div>
+          <div class="card-body">
+            <div class="card-title">${liquor.name}</div>
+            <div class="card-brand">${liquor.brand}</div>
+            <div class="card-info">
+              <span class="badge type">${typeKorean[liquor.type] || liquor.type}</span>
+              <span class="badge">${liquor.volume}ml</span>
+              <span class="badge">${liquor.alcoholContent}%</span>
+            </div>
+            <div class="card-price">₩${liquor.price.toLocaleString()}</div>
+            <button class="card-btn" onclick="openReservation(${liquor.id})">예약하기</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // 가맹점 렌더링
+    function renderStores() {
+      document.getElementById('storeGrid').innerHTML = stores.map(store => `
+        <div class="store-card">
+          <h3>🏪 ${store.name}</h3>
+          <p>📍 ${store.address}</p>
+          <p>📞 ${store.phone}</p>
+          <p class="hours">🕐 ${store.openTime} ~ ${store.closeTime}</p>
+        </div>
+      `).join('');
+    }
+    
+    // 매장 선택 옵션 업데이트
+    function updateStoreSelect() {
+      document.getElementById('modalStore').innerHTML = stores.map(store => 
+        `<option value="${store.id}">${store.name} (${store.address})</option>`
+      ).join('');
+    }
+    
+    // 섹션 전환
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      event.target.classList.add('active');
+      
+      if (sectionId === 'reservations' && token) {
+        loadReservations();
+      }
+    }
+    
+    // 인증 UI 업데이트
+    function updateAuthUI() {
+      const userInfo = document.getElementById('userInfo');
+      const authBtn = document.getElementById('authBtn');
+      
+      if (token && currentUser) {
+        userInfo.classList.add('logged-in');
+        document.getElementById('userName').textContent = `👤 ${currentUser.name}님`;
+        authBtn.textContent = '👤 ' + currentUser.name;
+      } else {
+        userInfo.classList.remove('logged-in');
+        authBtn.textContent = '👤 로그인';
+      }
+    }
+    
+    // 로그인/회원가입 폼 토글
+    function toggleAuth() {
+      const login = document.getElementById('loginForm');
+      const signup = document.getElementById('signupForm');
+      login.style.display = login.style.display === 'none' ? 'block' : 'none';
+      signup.style.display = signup.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    // 로그인
+    async function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email || !password) {
+        showToast('이메일과 비밀번호를 입력하세요', 'error');
+        return;
+      }
+      
+      const result = await api('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (result.success) {
+        token = result.data.token;
+        currentUser = result.data.user;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        updateAuthUI();
+        showToast('로그인 성공!', 'success');
+        showSection('liquors');
+        document.querySelector('.nav button').click();
+      } else {
+        showToast(result.error || '로그인 실패', 'error');
+      }
+    }
+    
+    // 회원가입
+    async function signup() {
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      
+      if (!name || !email || !password) {
+        showToast('모든 필드를 입력하세요', 'error');
+        return;
+      }
+      
+      const result = await api('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, password })
+      });
+      
+      if (result.success) {
+        token = result.data.token;
+        currentUser = result.data.user;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        updateAuthUI();
+        showToast('회원가입 성공!', 'success');
+        showSection('liquors');
+        document.querySelector('.nav button').click();
+      } else {
+        showToast(result.error || '회원가입 실패', 'error');
+      }
+    }
+    
+    // 로그아웃
+    function logout() {
+      token = null;
+      currentUser = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      updateAuthUI();
+      showToast('로그아웃 되었습니다', 'success');
+    }
+    
+    // 예약 모달 열기
+    function openReservation(liquorId) {
+      if (!token) {
+        showToast('로그인이 필요합니다', 'error');
+        showSection('auth');
+        document.getElementById('authBtn').click();
+        return;
+      }
+      
+      selectedLiquor = liquors.find(l => l.id === liquorId);
+      document.getElementById('modalLiquorInfo').innerHTML = `
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <strong>${selectedLiquor.name}</strong><br>
+          <span style="color: #888;">${selectedLiquor.brand}</span><br>
+          <span style="color: #667eea; font-weight: bold;">₩${selectedLiquor.price.toLocaleString()}</span>
+        </div>
+      `;
+      document.getElementById('modalQuantity').value = 1;
+      updateTotal();
+      document.getElementById('reservationModal').classList.add('active');
+    }
+    
+    // 모달 닫기
+    function closeModal() {
+      document.getElementById('reservationModal').classList.remove('active');
+    }
+    
+    // 총액 업데이트
+    function updateTotal() {
+      if (!selectedLiquor) return;
+      const quantity = parseInt(document.getElementById('modalQuantity').value) || 1;
+      const total = selectedLiquor.price * quantity;
+      document.getElementById('modalTotal').textContent = `총액: ₩${total.toLocaleString()}`;
+    }
+    
+    // 예약 생성
+    async function createReservation() {
+      const storeId = parseInt(document.getElementById('modalStore').value);
+      const quantity = parseInt(document.getElementById('modalQuantity').value);
+      const pickupDate = document.getElementById('modalDate').value;
+      const pickupTime = document.getElementById('modalTime').value;
+      
+      if (!pickupDate || !pickupTime) {
+        showToast('픽업 날짜와 시간을 선택하세요', 'error');
+        return;
+      }
+      
+      const result = await api('/api/reservations', {
+        method: 'POST',
+        body: JSON.stringify({
+          liquorId: selectedLiquor.id,
+          storeId,
+          quantity,
+          pickupDate,
+          pickupTime
+        })
+      });
+      
+      if (result.success) {
+        closeModal();
+        showToast('예약이 완료되었습니다!', 'success');
+        showSection('reservations');
+        document.querySelectorAll('.nav button')[2].click();
+      } else {
+        showToast(result.error || '예약 실패', 'error');
+      }
+    }
+    
+    // 예약 목록 로드
+    async function loadReservations() {
+      if (!token) {
+        document.getElementById('reservationList').innerHTML = `
+          <div class="empty-state">
+            <div class="icon">🔒</div>
+            <p>로그인이 필요합니다</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const result = await api('/api/reservations');
+      
+      if (result.success && result.data.items.length > 0) {
+        const statusKorean = {
+          pending: '대기중',
+          confirmed: '확정',
+          completed: '완료',
+          cancelled: '취소됨'
+        };
+        
+        document.getElementById('reservationList').innerHTML = result.data.items.map(r => `
+          <div class="reservation-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <strong>예약 #${r.id}</strong>
+              <span class="status ${r.status}">${statusKorean[r.status] || r.status}</span>
+            </div>
+            <p>📅 ${r.pickupDate} ${r.pickupTime}</p>
+            <p>📦 수량: ${r.quantity}개</p>
+            <p style="color: #667eea; font-weight: bold;">💰 ₩${r.totalAmount.toLocaleString()}</p>
+            ${r.status === 'pending' ? `<button onclick="cancelReservation(${r.id})" style="margin-top: 10px; padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">예약 취소</button>` : ''}
+          </div>
+        `).join('');
+      } else {
+        document.getElementById('reservationList').innerHTML = `
+          <div class="empty-state">
+            <div class="icon">📭</div>
+            <p>예약 내역이 없습니다</p>
+          </div>
+        `;
+      }
+    }
+    
+    // 예약 취소
+    async function cancelReservation(id) {
+      if (!confirm('예약을 취소하시겠습니까?')) return;
+      
+      const result = await api(`/api/reservations/${id}`, { method: 'DELETE' });
+      
+      if (result.success) {
+        showToast('예약이 취소되었습니다', 'success');
+        loadReservations();
+      } else {
+        showToast(result.error || '취소 실패', 'error');
+      }
+    }
+    
+    // 토스트 알림
+    function showToast(message, type = '') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
