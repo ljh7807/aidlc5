@@ -3,8 +3,8 @@ import path from 'path';
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../../data/liquor-reservation.db');
 
-// 데이터베이스 인스턴스 생성
-export const db = new Database(DB_PATH);
+// [FIX] TS4023: 타입을 명시적으로 선언하여 외부 모듈 타입 노출 오류 해결
+export const db: InstanceType<typeof Database> = new Database(DB_PATH);
 
 // 테이블 생성 스키마
 export function initializeDatabase(): void {

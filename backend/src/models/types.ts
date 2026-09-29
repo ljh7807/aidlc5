@@ -29,7 +29,8 @@ export interface Liquor {
   updatedAt: string;
 }
 
-export type LiquorType = 'whiskey' | 'wine' | 'beer' | 'soju' | 'sake' | 'other';
+// [FIX] models/Liquor.ts의 LiquorType에는 vodka/rum/gin/brandy가 있는데 여기엔 없었음. 통일
+export type LiquorType = 'whiskey' | 'wine' | 'beer' | 'soju' | 'sake' | 'vodka' | 'rum' | 'gin' | 'brandy' | 'other';
 
 // 가맹점 엔티티 (FR3.1)
 export interface Store {

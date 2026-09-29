@@ -7,13 +7,14 @@ import {
   ReviewListResponse,
   ReviewTargetType,
 } from '../models';
-import { getDatabase } from '../database';
+// [FIX] getDatabase는 존재하지 않음. db 인스턴스를 직접 import하도록 수정
+import { db as defaultDb } from '../database';
 
 export class ReviewRepository {
   private db: Database.Database;
 
   constructor(database?: Database.Database) {
-    this.db = database || getDatabase();
+    this.db = database || defaultDb;
   }
 
   /**

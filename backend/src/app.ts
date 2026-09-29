@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { initializeDatabase, seedDatabase } from './database';
+import { errorHandler } from './middleware/errorHandler';
 
 // 라우터 임포트
 import authRoutes from './routes/auth.routes';
@@ -51,11 +52,8 @@ app.use((req, res) => {
   res.status(404).json({ success: false, error: '요청한 리소스를 찾을 수 없습니다.' });
 });
 
-// 에러 핸들러
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Server Error:', err);
-  res.status(500).json({ success: false, error: '서버 오류가 발생했습니다.' });
-});
+// 중앙 에러 핸들러 (AppError 계열 + 예상치 못한 에러 모두 처리)
+app.use(errorHandler);
 
 // 서버 시작
 if (process.env.NODE_ENV !== 'test') {

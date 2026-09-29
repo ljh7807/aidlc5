@@ -2,8 +2,14 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { userRepository } from '../repositories';
 import { User, AuthResponse, SignupRequest } from '../models/types';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+import { ValidationError, NotFoundError, ConflictError, UnauthorizedError } from '../errors';
+// [FIX] JWT_SECRET이 undefined일 때 TypeScript가 타입 오류를 냄.
+// 환경변수 검증 후 string으로 단언하여 타입 안전하게 처리
+const JWT_SECRET_RAW = process.env.JWT_SECRET;
+if (!JWT_SECRET_RAW) {
+  throw new Error('JWT_SECRET 환경변수가 설정되지 않았습니다. .env 파일을 확인해주세요.');
+}
+const JWT_SECRET: string = JWT_SECRET_RAW;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 export class AuthService {
@@ -12,7 +18,7 @@ export class AuthService {
     // 이메일 중복 확인
     const existingUser = userRepository.findByEmail(data.email);
     if (existingUser) {
-      throw new Error('이미 등록된 이메일입니다.');
+      throw new ConflictError('이미 등록된 이메일입니다.');
     }
 
     // 비밀번호 해싱
@@ -40,13 +46,12 @@ export class AuthService {
     // 사용자 조회
     const user = userRepository.findByEmail(email);
     if (!user) {
-      throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
+      throw new UnauthorizedError('이메일 또는 비밀번호가 올바르지 않습니다.');
     }
 
-    // 비밀번호 확인
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
+      throw new UnauthorizedError('이메일 또는 비밀번호가 올바르지 않습니다.');
     }
 
     // JWT 토큰 생성
@@ -72,13 +77,12 @@ export class AuthService {
 
     // 만 19세 이상 확인
     if (age < 19) {
-      throw new Error('만 19세 이상만 이용 가능합니다.');
+      throw new ValidationError('만 19세 이상만 이용 가능합니다.');
     }
 
-    // 성인인증 상태 업데이트
     const user = userRepository.updateAdultVerification(userId, birthDate);
     if (!user) {
-      throw new Error('사용자를 찾을 수 없습니다.');
+      throw new NotFoundError('사용자를 찾을 수 없습니다.');
     }
 
     return this.sanitizeUser(user);
@@ -90,7 +94,7 @@ export class AuthService {
       const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
       return decoded;
     } catch (error) {
-      throw new Error('유효하지 않은 토큰입니다.');
+      throw new UnauthorizedError('유효하지 않은 토큰입니다.');
     }
   }
 
