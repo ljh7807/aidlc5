@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "AI-DLC Audit and Sensors",
+      "trigger": "PostToolUse",
+      "matcher": "fs_write|str_replace|fs_append",
+      "action": {
+        "type": "command",
+        "command": "\"%USERPROFILE%\\.bun\\bin\\bun.exe\" .kiro/tools/aidlc.ts engine adapter kiro-ide audit-and-sensors"
+      }
+    }
+  ]
+}

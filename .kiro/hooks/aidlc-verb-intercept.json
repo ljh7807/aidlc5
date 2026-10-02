@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "AI-DLC Verb Intercept",
+      "trigger": "UserPromptSubmit",
+      "action": {
+        "type": "command",
+        "command": "\"%USERPROFILE%\\.bun\\bin\\bun.exe\" .kiro/tools/aidlc.ts engine adapter kiro-ide verb-intercept"
+      }
+    }
+  ]
+}

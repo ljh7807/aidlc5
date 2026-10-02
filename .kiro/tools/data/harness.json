@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "distribution": "kiro-ide",
+  "productName": "Kiro IDE",
+  "configNextStep": "open this project in Kiro IDE, then run `/aidlc --doctor`",
+  "name": "kiro-ide",
+  "harnessDir": ".kiro",
+  "rulesSubdir": "steering",
+  "providers": {
+    "schemaVersion": 1,
+    "provider": "amazon-bedrock",
+    "region": "cn-northwest-1",
+    "pendingActions": [
+      {
+        "id": "bedrock-model-access",
+        "status": "pending"
+      },
+      {
+        "id": "kiro-ide-chat-model",
+        "status": "pending"
+      }
+    ]
+  },
+  "runtime": {
+    "schemaVersion": 1,
+    "baselinePath": "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\dotnet\\;C:\\Program Files\\Amazon\\AWSCLIV2\\;C:\\Program Files\\Bandizip\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA App\\NvDLISR;C:\\Program Files\\PuTTY\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\GitHub CLI\\;C:\\Program Files\\nodejs\\;C:\\Users\\JINHO\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\JINHO\\AppData\\Local\\VanDyke Software\\SecureCRT\\;C:\\Users\\JINHO\\AppData\\Local\\Programs\\Kiro\\bin;C:\\Users\\JINHO\\AppData\\Local\\Python\\bin;C:\\Users\\JINHO\\.bun\\bin;C:\\Users\\JINHO\\AppData\\Roaming\\npm;C:\\Users\\JINHO\\AppData\\Local\\aidlc\\bin",
+    "aidlcPath": "C:\\Users\\JINHO\\AppData\\Local\\aidlc\\bin\\aidlc.cmd"
+  }
+}
